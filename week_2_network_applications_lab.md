@@ -1,34 +1,35 @@
-# Week 2 — Network Applications (QHO443): Workgroup File Sharing 
+# Week 2 — Network Applications (QHO443): Workgroup File Sharing
+
 
 ## Introduction
-In this lab you will configure a peer-to-peer **Windows Workgroup** (or macOS host) and connect from a **Linux VM** using SMB/CIFS. You will create local users and groups, set **Share** and **NTFS** (or filesystem) permissions, map a network drive, verify effective access, and capture evidence for your **PLR**.
+In this lab you will configure a peer-to-peer **Windows Workgroup** (or macOS host) and connect from a **Windows Server VM** using SMB/CIFS. You will create local users and groups, set **Share** and **NTFS** (or filesystem) permissions, map a network drive, verify effective access, and capture evidence for your **PLR**.
 
 ### What you’ll learn
-- Workgroup vs Domain basics; SMB/CIFS sharing across Windows/macOS/Linux.
+- Workgroup vs Domain basics; SMB/CIFS sharing across Windows/macOS/Windows Server.
 - How **Share** permissions and **NTFS** permissions combine (**most restrictive wins**).
 - Creating local **users** and **groups** and applying **least privilege**.
-- Mapping shares from Windows and mounting from Linux (`cifs`), plus `smbclient`.
+- Mapping shares from Windows/Windows Server using File Explorer and `net use`.
 - Troubleshooting discovery, firewall profile, services, name vs IP, SMB version.
 - Writing PLR: **Intro/Method/Summary** with annotated screenshots (Assessment Clinic).
 
 ---
 
-## Read this first — definitions
+## Read this first — definitions 
 
 - **Host** = your real laptop that will **share the folder**. Pick **one**: your **Windows laptop** *or* your **Mac**.
-- **Guest / VM** = the **Linux virtual machine** running inside VirtualBox/Parallels/UTM. This acts as the **second computer**.
+- **Guest / VM** = the **Windows Server virtual machine** running inside VirtualBox/Parallels/UTM. This acts as the **second computer**.
 - **Which computer do I click on?**  
   • If your **host is Windows**, do the **Workgroup**, **Discovery/Sharing**, **User/Group**, and **Share/NTFS** steps **on the Windows host only**.  
   • If your **host is Mac**, **skip** the Windows Workgroup bits and do the **macOS File Sharing** steps **on the Mac host**.  
-  • All **Linux commands** are done **inside the Linux VM**.
+  • All **second-computer steps** are done **inside the Windows Server VM**.
 - **Network mode for the VM**: set to **Bridged** if possible (so the VM gets a normal IP like `192.168.x.x`). NAT can work but IP testing is easier with Bridged.
 
-## Slide Map & Exercises
+## Slide Map & Exercises 
 
 ### Activity 1 — Configure a Windows Workgroup & Verify Connectivity
 **Goal (why):** Make two Windows systems see each other in a **Workgroup**, then prove it with **ping**, **net view**, and service checks. This confirms the network is ready before we add permissions. 
-**Do this on:** **Windows HOST** (your real Windows laptop). **Not** in the Linux VM.  
-**If your host is a Mac, skip this and use *Activity M — macOS host* below.**
+**Do this on:** **Windows HOST** (your real Windows laptop). **Also set the same Workgroup on the Windows Server VM.**  
+**If your host is a Mac, set the Workgroup only inside the Windows Server VM**, then use *Activity M — macOS host* below.*
 **From slides:** Rename Workgroup → enable Network Discovery/File Sharing → `ping`/`net view` → check services → **Q:** *If access fails, what could be the reason?*
 
 **Steps (Windows host + a second Windows/VM):**
@@ -96,7 +97,7 @@ In this lab you will configure a peer-to-peer **Windows Workgroup** (or macOS ho
 
 ### Activity 3 — Map a Network Drive, Test Access, Troubleshoot
 **Goal (why):** Show that authorised users can **create/edit/delete** files, and that removing access leads to **Access Denied**. This proves your permissions really work. 
-**Do this on:** the **second computer**. In our setup that’s the **Linux VM**. (If you have a real second Windows PC, you can do the same steps there.)
+**Do this on:** the **Windows Server VM** (second computer). (If you have a real second Windows PC, you can do the same steps there.)
 **From slides:** Login as `User1` → map drive → CRUD test → remove from group → Access Denied → troubleshooting commands.
 
 **Steps (second Windows PC/VM):**
@@ -139,7 +140,7 @@ cd /mnt/shareddata && echo "hello" > test.txt && cat test.txt && rm test.txt
 
 ---
 
-## Assessment Clinic (slides) — Questions Answered
+## Assessment Clinic (slides) — 
 
 ### Clinic Activity 1 — PLR Structure (True/False)
 > Decide T/F based on the guidance.
@@ -227,5 +228,63 @@ You configured cross-platform SMB file sharing, applied least privilege with Sha
    Back on the Mac: in **File Sharing**, change that user’s permission to **Read only** (or remove the user).  
    In the Linux VM, try to create/delete again — it should **fail**.
 
-> ✅ If your **host is a Mac**, you can **skip Activities 1 & 2** (those are Windows‑only) and do **Activity 3** + **Activity M** instead.
+>  If your **host is a Mac**, you can **skip Activities 1 & 2** (those are Windows‑only) and do **Activity 3** + **Activity M** instead.
+
+
+
+---
+
+## Appendix A — Where to find **Local Users and Groups** (and how to create `User1`)
+
+### What is it?
+**Local Users and Groups** is a Windows tool for managing accounts **on this one computer** (not domain accounts). You’ll use it to make `User1` and (optionally) the `ProjectTeam` group.
+
+### A) Windows 11 **Pro/Enterprise/Education** and **Windows Server 2019/2022**
+**Path 1 (Start menu):**
+1) Click **Start** → type **Computer Management** → open it.
+2) In the left tree, expand **System Tools → Local Users and Groups**.
+3) Click **Users** → in the right pane, right‑click and choose **New User…**
+4) Fill in:
+   - **User name:** `User1`
+   - **Password:** set a lab password you’ll remember
+   - Un‑tick **User must change password at next logon** (for the lab)  
+     *(Optional: tick **Password never expires** for the lab)*
+5) Click **Create**, then **Close**.
+
+**Path 2 (Run box):**
+1) Press **Win + R** → type `compmgmt.msc` → **Enter**.  
+   *(On Pro/Enterprise/Server you can also run `lusrmgr.msc` to open just the snap‑in.)*
+2) Then follow steps **A‑2 to A‑5** above.
+
+**Windows Server extra (another way):**
+- **Server Manager → Tools → Computer Management** → then **Local Users and Groups**.
+
+**Add to a group (GUI method):**
+1) In **Computer Management**, click **Groups** → if **ProjectTeam** does not exist, right‑click **Groups → New Group…** → **Group name:** `ProjectTeam` → **Create**.
+2) Double‑click **ProjectTeam** → **Add…** → type `User1` → **Check Names** → **OK** → **OK**.
+
+### B) Windows 11 **Home** (snap‑in not available)
+On Home edition, **Local Users and Groups** is not included. Use one of these:
+
+**B‑1) Settings (local account via GUI):**
+1) **Settings → Accounts → Other users → Add account**.
+2) Click **I don’t have this person’s sign‑in information** → **Add a user without a Microsoft account**.
+3) **Username:** `User1` → set a password → **Next**.
+
+**B‑2) Command Prompt (Admin):**
+```bat
+net user User1 P@ssword123 /add
+net localgroup ProjectTeam /add
+net localgroup ProjectTeam User1 /add
+```
+
+**B‑3) PowerShell (Admin):**
+```powershell
+$password = Read-Host -AsSecureString "Enter a password for User1"
+New-LocalUser -Name "User1" -Password $password -FullName "Lab User"
+If (-not (Get-LocalGroup -Name "ProjectTeam" -ErrorAction SilentlyContinue)) { New-LocalGroup -Name "ProjectTeam" }
+Add-LocalGroupMember -Group "ProjectTeam" -Member "User1"
+```
+
+> **Tip:** After creating `User1`, continue with the lab: set **Share** and **NTFS** permissions for `ProjectTeam`, then map the share from your second computer and do the CRUD test.
 

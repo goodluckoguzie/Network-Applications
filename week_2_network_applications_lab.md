@@ -13,7 +13,7 @@ In this lab you will configure a peer-to-peer **Windows Workgroup** (or macOS ho
 
 ---
 
-## Read this first — simple definitions (beginner)
+## Read this first — definitions
 
 - **Host** = your real laptop that will **share the folder**. Pick **one**: your **Windows laptop** *or* your **Mac**.
 - **Guest / VM** = the **Linux virtual machine** running inside VirtualBox/Parallels/UTM. This acts as the **second computer**.
@@ -23,7 +23,7 @@ In this lab you will configure a peer-to-peer **Windows Workgroup** (or macOS ho
   • All **Linux commands** are done **inside the Linux VM**.
 - **Network mode for the VM**: set to **Bridged** if possible (so the VM gets a normal IP like `192.168.x.x`). NAT can work but IP testing is easier with Bridged.
 
-## Slide Map & Exercises (answered)
+## Slide Map & Exercises
 
 ### Activity 1 — Configure a Windows Workgroup & Verify Connectivity
 **Goal (why):** Make two Windows systems see each other in a **Workgroup**, then prove it with **ping**, **net view**, and service checks. This confirms the network is ready before we add permissions. 

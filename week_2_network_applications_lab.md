@@ -1,6 +1,4 @@
-# Week 2 — Network Applications (QHO443): Workgroup File Sharing — Slide-by-Slide Lab Pack
-
-> **House style:** mirrors your *DiscoverHealthPartB.markdown* — Introduction → What you’ll learn/do → numbered Exercises with CLI, Troubleshooting, and a Summary.
+# Week 2 — Network Applications (QHO443): Workgroup File Sharing 
 
 ## Introduction
 In this lab you will configure a peer-to-peer **Windows Workgroup** (or macOS host) and connect from a **Linux VM** using SMB/CIFS. You will create local users and groups, set **Share** and **NTFS** (or filesystem) permissions, map a network drive, verify effective access, and capture evidence for your **PLR**.
